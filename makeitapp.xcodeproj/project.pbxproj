@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A7AFAA46A69440F44B71E9B /* Pods_makeitapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A747F0DA17C4D28741ACA9C7 /* Pods_makeitapp.framework */; };
 		63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1C2251C89E00819465 /* AppDelegate.swift */; };
 		63DD3E1F2251C89E00819465 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* ViewController.swift */; };
 		63DD3E222251C89E00819465 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E202251C89E00819465 /* Main.storyboard */; };
 		63DD3E242251C8A000819465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E232251C8A000819465 /* Assets.xcassets */; };
 		63DD3E272251C8A000819465 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E252251C8A000819465 /* LaunchScreen.storyboard */; };
+		63DD3E2F2253269700819465 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E2E2253269700819465 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		11B67FFA5A3A6EBD9FBD3551 /* Pods-makeitapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-makeitapp.release.xcconfig"; path = "Target Support Files/Pods-makeitapp/Pods-makeitapp.release.xcconfig"; sourceTree = "<group>"; };
 		63DD3E192251C89E00819465 /* makeitapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = makeitapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DD3E1C2251C89E00819465 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63DD3E1E2251C89E00819465 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +25,9 @@
 		63DD3E232251C8A000819465 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		63DD3E262251C8A000819465 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		63DD3E282251C8A000819465 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		63DD3E2E2253269700819465 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		8B017E271BA919DC411C271E /* Pods-makeitapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-makeitapp.debug.xcconfig"; path = "Target Support Files/Pods-makeitapp/Pods-makeitapp.debug.xcconfig"; sourceTree = "<group>"; };
+		A747F0DA17C4D28741ACA9C7 /* Pods_makeitapp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_makeitapp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A7AFAA46A69440F44B71E9B /* Pods_makeitapp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +47,8 @@
 			children = (
 				63DD3E1B2251C89E00819465 /* makeitapp */,
 				63DD3E1A2251C89E00819465 /* Products */,
+				D5C392982BD70C357AF8EF86 /* Pods */,
+				BEC56E153A1DDCEE2FBA7462 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,6 +63,7 @@
 		63DD3E1B2251C89E00819465 /* makeitapp */ = {
 			isa = PBXGroup;
 			children = (
+				63DD3E2E2253269700819465 /* GoogleService-Info.plist */,
 				63DD3E1C2251C89E00819465 /* AppDelegate.swift */,
 				63DD3E1E2251C89E00819465 /* ViewController.swift */,
 				63DD3E202251C89E00819465 /* Main.storyboard */,
@@ -64,6 +74,23 @@
 			path = makeitapp;
 			sourceTree = "<group>";
 		};
+		BEC56E153A1DDCEE2FBA7462 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A747F0DA17C4D28741ACA9C7 /* Pods_makeitapp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D5C392982BD70C357AF8EF86 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8B017E271BA919DC411C271E /* Pods-makeitapp.debug.xcconfig */,
+				11B67FFA5A3A6EBD9FBD3551 /* Pods-makeitapp.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -71,9 +98,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 63DD3E2B2251C8A000819465 /* Build configuration list for PBXNativeTarget "makeitapp" */;
 			buildPhases = (
+				E521071502027502FFDA3A5D /* [CP] Check Pods Manifest.lock */,
 				63DD3E152251C89E00819465 /* Sources */,
 				63DD3E162251C89E00819465 /* Frameworks */,
 				63DD3E172251C89E00819465 /* Resources */,
+				1F689CA045A45E663F6A686B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -123,12 +152,70 @@
 			buildActionMask = 2147483647;
 			files = (
 				63DD3E272251C8A000819465 /* LaunchScreen.storyboard in Resources */,
+				63DD3E2F2253269700819465 /* GoogleService-Info.plist in Resources */,
 				63DD3E242251C8A000819465 /* Assets.xcassets in Resources */,
 				63DD3E222251C89E00819465 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1F689CA045A45E663F6A686B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-makeitapp/Pods-makeitapp-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
+				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-makeitapp/Pods-makeitapp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E521071502027502FFDA3A5D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-makeitapp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		63DD3E152251C89E00819465 /* Sources */ = {
@@ -280,6 +367,7 @@
 		};
 		63DD3E2C2251C8A000819465 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B017E271BA919DC411C271E /* Pods-makeitapp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -298,6 +386,7 @@
 		};
 		63DD3E2D2251C8A000819465 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 11B67FFA5A3A6EBD9FBD3551 /* Pods-makeitapp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
