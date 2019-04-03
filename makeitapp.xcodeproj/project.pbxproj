@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1A7AFAA46A69440F44B71E9B /* Pods_makeitapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A747F0DA17C4D28741ACA9C7 /* Pods_makeitapp.framework */; };
 		63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1C2251C89E00819465 /* AppDelegate.swift */; };
-		63DD3E1F2251C89E00819465 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* ViewController.swift */; };
+		63DD3E1F2251C89E00819465 /* MakeItViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* MakeItViewController.swift */; };
 		63DD3E222251C89E00819465 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E202251C89E00819465 /* Main.storyboard */; };
 		63DD3E242251C8A000819465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E232251C8A000819465 /* Assets.xcassets */; };
 		63DD3E272251C8A000819465 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E252251C8A000819465 /* LaunchScreen.storyboard */; };
@@ -20,7 +20,7 @@
 		11B67FFA5A3A6EBD9FBD3551 /* Pods-makeitapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-makeitapp.release.xcconfig"; path = "Target Support Files/Pods-makeitapp/Pods-makeitapp.release.xcconfig"; sourceTree = "<group>"; };
 		63DD3E192251C89E00819465 /* makeitapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = makeitapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DD3E1C2251C89E00819465 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		63DD3E1E2251C89E00819465 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		63DD3E1E2251C89E00819465 /* MakeItViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeItViewController.swift; sourceTree = "<group>"; };
 		63DD3E212251C89E00819465 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		63DD3E232251C8A000819465 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		63DD3E262251C8A000819465 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -42,6 +42,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		63051A3422533CDF004CF23E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		63051A3522533CFE004CF23E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				63DD3E252251C8A000819465 /* LaunchScreen.storyboard */,
+				63DD3E202251C89E00819465 /* Main.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		63051A3622533D0C004CF23E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				63DD3E1E2251C89E00819465 /* MakeItViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		63051A3722533D30004CF23E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				63DD3E232251C8A000819465 /* Assets.xcassets */,
+				63DD3E2E2253269700819465 /* GoogleService-Info.plist */,
+				63DD3E282251C8A000819465 /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		63DD3E102251C89E00819465 = {
 			isa = PBXGroup;
 			children = (
@@ -63,13 +97,11 @@
 		63DD3E1B2251C89E00819465 /* makeitapp */ = {
 			isa = PBXGroup;
 			children = (
-				63DD3E2E2253269700819465 /* GoogleService-Info.plist */,
 				63DD3E1C2251C89E00819465 /* AppDelegate.swift */,
-				63DD3E1E2251C89E00819465 /* ViewController.swift */,
-				63DD3E202251C89E00819465 /* Main.storyboard */,
-				63DD3E232251C8A000819465 /* Assets.xcassets */,
-				63DD3E252251C8A000819465 /* LaunchScreen.storyboard */,
-				63DD3E282251C8A000819465 /* Info.plist */,
+				63051A3422533CDF004CF23E /* Model */,
+				63051A3622533D0C004CF23E /* Controller */,
+				63051A3722533D30004CF23E /* Supporting Files */,
+				63051A3522533CFE004CF23E /* View */,
 			);
 			path = makeitapp;
 			sourceTree = "<group>";
@@ -222,7 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63DD3E1F2251C89E00819465 /* ViewController.swift in Sources */,
+				63DD3E1F2251C89E00819465 /* MakeItViewController.swift in Sources */,
 				63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -372,7 +404,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3GLSZRZ9TE;
-				INFOPLIST_FILE = makeitapp/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/makeitapp/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -391,7 +423,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3GLSZRZ9TE;
-				INFOPLIST_FILE = makeitapp/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/makeitapp/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

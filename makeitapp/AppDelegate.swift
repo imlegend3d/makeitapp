@@ -16,8 +16,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+        //Setting up Firebase
         FirebaseApp.configure()
+        
+        //Setup UI programmatically 
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        
+        let controller = MakeItViewController()
+        let navigationController = UINavigationController(rootViewController: controller)
+        window?.rootViewController = navigationController
+        let navigationBarApperance = UINavigationBar.appearance()
+        navigationBarApperance.tintColor = UIColor.white
+        navigationBarApperance.barTintColor = UIColor.black
+        navigationBarApperance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return true
     }
 
