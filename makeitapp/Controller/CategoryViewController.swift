@@ -7,41 +7,52 @@
 //
 
 import UIKit
+import RealmSwift
+import Firebase
 
-class MakeItViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
-    var itemsArray = ["Item 1", "Item 2", "Item 3"]
+class CategoryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    let realm = try! Realm()
+    
+    private let cellId = "cellId"
+    private let headerId = "headerId"
+    
+    var categories: Results<Category>?
+    
     let tableView: UITableView = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadCategories()
         
         navigationItem.title = "MakeIt"
 
         tableView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(MyCell.self, forCellReuseIdentifier: "cellId")
-        tableView.register(Header.self, forHeaderFooterViewReuseIdentifier: "headerId")
+        tableView.register(MyCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(Header.self, forHeaderFooterViewReuseIdentifier: headerId)
         tableView.sectionHeaderHeight = 50
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: "addItems")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(CategoryViewController.addItems))
         self.view.addSubview(tableView)
     }
     
-    //MARK - Add new items
+    //MARK - Add new category
     
     @objc func addItems(){
         
         var textField = UITextField()
         
-        let alert = UIAlertController(title: "Add New MakeIt Item", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Add New MakeIt Category", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //what happens once button is pressed.
             if textField.text != "" {
-                self.itemsArray.append(textField.text!)
+                let newCategory = Category()
+                newCategory.name = textField.text!
                 
-                self.tableView.reloadData()
+                self.saveCategories(category: newCategory)
             }
         }
         
@@ -58,16 +69,25 @@ class MakeItViewController: UIViewController, UITableViewDataSource, UITableView
         present(alert,animated: true, completion: nil)
     }
     
+    //MARK: - Load Categories
+    
+    func loadCategories(){
+    
+        categories = realm.objects(Category.self)
+        
+        tableView.reloadData()
+    }
+    
     //MARK - Tableview DataSource Methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsArray.count
+        return categories?.count ?? 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! MyCell
         
-        cell.nameLabel.text = itemsArray[indexPath.row]
+        cell.nameLabel.text = categories?[indexPath.row].name ?? "No Categories Added Yet"
         
         return cell
     }
@@ -83,13 +103,26 @@ class MakeItViewController: UIViewController, UITableViewDataSource, UITableView
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }else{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+       showTodoListController(index: indexPath)
+    }
+    
+    func showTodoListController(index: IndexPath){
+        let todoVListViewController = TodoListViewController()
+        todoVListViewController.selectedCategory = categories?[index.row]
+        navigationController?.pushViewController(todoVListViewController, animated: true)
+    }
+    
+    //MARK: - Data Manipulation Methods
+    
+    func saveCategories(category: Category){
+        do {
+            try realm.write {
+                realm.add(category)
+            }
+        } catch {
+            print("Error saving category data, \(error)")
         }
-        
-        
+        tableView.reloadData()
     }
     
 }
@@ -106,7 +139,8 @@ class Header: UITableViewHeaderFooterView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "MyHeader"
+        label.text = "MakeIt - Categories"
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 17)
         return label

@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,11 +20,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //Setting up Firebase
         FirebaseApp.configure()
         
+        //Setting up Realm persistance container
+       
+        do {
+            _ = try Realm()
+        } catch {
+            print("Error initialising realm, \(error)")
+        }
+         //print(Realm.Configuration.defaultConfiguration.fileURL)
+        
         //Setup UI programmatically 
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let controller = MakeItViewController()
+        let controller = CategoryViewController()
         let navigationController = UINavigationController(rootViewController: controller)
         window?.rootViewController = navigationController
         let navigationBarApperance = UINavigationBar.appearance()
