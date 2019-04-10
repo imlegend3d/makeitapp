@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import RealmSwift
+import ChameleonFramework
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
