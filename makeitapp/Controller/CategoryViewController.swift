@@ -71,7 +71,6 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         case false:
             editButtonItem.title = "Edit"
         }
-
     }
     
     @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
@@ -195,13 +194,10 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         
         try! realm.write {
-            
             guard let items = categories else {fatalError("Error seting order #s")}
-                for cell in items{
-                    cell.order += 1
-                }
-            
-            
+            for cell in items{
+                cell.order += 1
+            }
             let sourceObject = items[sourceIndexPath.row]
             let destinationObject = items[destinationIndexPath.row]
             
@@ -221,7 +217,6 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
             sourceObject.order = destinationObjectOrder
             categories = items
         }
-      
     }
     
     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {

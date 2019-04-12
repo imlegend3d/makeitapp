@@ -41,11 +41,15 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.register(MyCell.self, forCellReuseIdentifier: cellId)
         tableView.rowHeight = 60.0
         tableView.separatorStyle = .none
-        //tableView.register(Header.self, forHeaderFooterViewReuseIdentifier: headerId)
-        //tableView.sectionHeaderHeight = 50
-        //navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(TodoListViewController.addItems))
         
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(TodoListViewController.longPresseGestureRecognizer(_:)))
+        tableView.addGestureRecognizer(longPress)
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(TodoListViewController.addItems))
+        
+         editButtonItem.action = #selector(edit)
+        
+        navigationItem.rightBarButtonItems = [addButton, editButtonItem]
         //SearchBar setup
         
         searchBar.searchBarStyle = UISearchBar.Style.prominent
@@ -57,7 +61,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationItem.titleView = searchBar
         
         self.view.addSubview(tableView)
-        //self.view.addSubview(searchBar)
+    
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,6 +76,27 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             
             searchBar.barTintColor = UIColor(hexString: colorHex)
         }
+    }
+    
+    @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
+        let longPress = gestureRecognizer as! UILongPressGestureRecognizer
+        let state = longPress.state
+        let locationInView = longPress.location(in: tableView)
+        let indexPath = tableView.indexPathForRow(at: locationInView)
+        
+        
+        switch state {
+        case UIGestureRecognizer.State.began:
+            edit()
+            //        case UIGestureRecognizer.State.changed:
+            //
+            //        case UIGestureRecognizer.State.cancelled:
+            //        case .ended:
+        //            edit()
+        default:
+            print("default")
+        }
+        
     }
     
     //MARK - Add new items
@@ -123,6 +148,19 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         tableView.reloadData()
     }
+    
+    //MARK: - Edit methods
+    @objc func edit(){
+        tableView.isEditing = !tableView.isEditing
+        
+        switch tableView.isEditing {
+        case true:
+            editButtonItem.title = "Done"
+        case false:
+            editButtonItem.title = "Edit"
+        }
+    }
+    
     
     //MARK: - TableView DataSource Methods
     
@@ -176,20 +214,49 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.reloadData()
     }
     
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete{
-//            if let item = itemResults?[indexPath.row] {
-//                do{
-//                    try realm.write {
-//                        realm.delete(item)
-//                    }
-//                } catch {
-//                    print("Error deleting item, \(error)")
-//                }
-//            }
-//        }
-//        tableView.reloadData()
-//    }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
+        try! realm.write {
+            guard let items = itemResults else {fatalError("Error seting order #s")}
+            for cell in items{
+                cell.order += 1
+            }
+            let sourceObject = items[sourceIndexPath.row]
+            let destinationObject = items[destinationIndexPath.row]
+            
+            let destinationObjectOrder = destinationObject.order
+            
+            if sourceIndexPath.row < destinationIndexPath.row {
+                for index in sourceIndexPath.row...destinationIndexPath.row {
+                    let object = items[index]
+                    object.order -= 1
+                }
+            } else {
+                for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
+                    let object = items[index]
+                    object.order += 1
+                }
+            }
+            sourceObject.order = destinationObjectOrder
+            itemResults = items
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
 }
 
 extension TodoListViewController: UISearchBarDelegate{
