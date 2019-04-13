@@ -82,7 +82,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
         let state = longPress.state
         let locationInView = longPress.location(in: tableView)
-        let indexPath = tableView.indexPathForRow(at: locationInView)
+        //let indexPath = tableView.indexPathForRow(at: locationInView)
         
         
         switch state {
@@ -117,6 +117,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                             let newItem = Item()
                             newItem.title = textField.text!
                             newItem.dateCreated = Date()
+                            newItem.order = currentCategory.items.count + 1
                             currentCategory.items.append(newItem)
                         }
                     } catch  {
@@ -140,11 +141,14 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         present(alert,animated: true, completion: nil)
     }
     
+    //MARK: - Save item
+    
+    
     //MARK: - Load Items 
     
     func loadItems(){
         
-        itemResults = selectedCategory?.items.sorted(byKeyPath: "dateCreated", ascending: true)
+        itemResults = selectedCategory?.items.sorted(byKeyPath: "order", ascending: true)
         
         tableView.reloadData()
     }
@@ -158,9 +162,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             editButtonItem.title = "Done"
         case false:
             editButtonItem.title = "Edit"
+            loadItems()
         }
     }
-    
     
     //MARK: - TableView DataSource Methods
     
@@ -211,7 +215,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             
         tableView.deselectRow(at: indexPath, animated: true)
         
-        tableView.reloadData()
+        loadItems()
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -226,10 +230,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         try! realm.write {
             guard let items = itemResults else {fatalError("Error seting order #s")}
-            for cell in items{
-                cell.order += 1
-            }
+            
             let sourceObject = items[sourceIndexPath.row]
+            
             let destinationObject = items[destinationIndexPath.row]
             
             let destinationObjectOrder = destinationObject.order
@@ -247,7 +250,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             }
             sourceObject.order = destinationObjectOrder
             itemResults = items
+
         }
+        loadItems()
     }
     
     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
@@ -299,6 +304,7 @@ extension TodoListViewController: SwipeTableViewCellDelegate{
         }
         
         deleteAction.image = UIImage(named: "delete-icon")
+        
         return [deleteAction]
     }
     

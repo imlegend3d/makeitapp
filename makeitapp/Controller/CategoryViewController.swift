@@ -242,6 +242,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
                 realm.add(category)
                 for cell in categories!{
                     cell.order += 1
+                    print(" Category Order\(cell.order)")
                 }
             }
         } catch {
