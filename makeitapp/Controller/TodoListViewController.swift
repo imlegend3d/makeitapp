@@ -201,7 +201,20 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK - TableViewDelegate Methods
     
+
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if let originalTextLbl = tableView.cellForRow(at: indexPath) {
+            let textFieldPlace: CGRect = originalTextLbl.frame
+            let myTextField : UITextField = UITextField(frame: textFieldPlace)
+            myTextField.text = originalTextLbl.textLabel?.text
+            myTextField.backgroundColor = UIColor.white
+            //myTextField.backgroundColor = tableView.cellForRow(at: indexPath)?.backgroundColor
+            myTextField.textColor = ContrastColorOf(backgroundColor: (tableView.cellForRow(at: indexPath)?.backgroundColor)!, returnFlat: true)
+            myTextField.becomeFirstResponder()
+            tableView.addSubview(myTextField)
+        }
         
         if let item = itemResults?[indexPath.row] {
             do{
@@ -212,6 +225,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                 print("Error saving done status, \(error)")
             }
         }
+        
             
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -262,6 +276,8 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .none
     }
+    
+    
 }
 
 extension TodoListViewController: UISearchBarDelegate{
