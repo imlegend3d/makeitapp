@@ -12,7 +12,7 @@ import Firebase
 import SwipeCellKit
 import ChameleonFramework
 
-class TodoListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class TodoListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
    
     let realm = try! Realm()
@@ -21,7 +21,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     // private let headerId = "headerId"
     // private let searchBarheight: Int = 40
     
-    var itemResults: Results<Item>?
+    //var itemResults: Results<Item>?
+    var itemResults: List<Item>?
+    //var itemResults: AnyRealmCollection<Item>!
     
     let searchBar = UISearchBar()
     let tableView: UITableView = UITableView()
@@ -31,7 +33,11 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
            loadItems()
         }
     }
-
+    
+    var myTextField : UITextField = UITextField(frame: CGRect.zero)
+    
+    var selectedIndex: Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -61,7 +67,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationItem.titleView = searchBar
         
         self.view.addSubview(tableView)
-    
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,6 +81,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             navBar.tintColor = ContrastColorOf(backgroundColor: UIColor(hexString: colorHex), returnFlat: true)
             
             searchBar.barTintColor = UIColor(hexString: colorHex)
+            
         }
     }
     
@@ -83,7 +90,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         let state = longPress.state
         let locationInView = longPress.location(in: tableView)
         //let indexPath = tableView.indexPathForRow(at: locationInView)
-        
         
         switch state {
         case UIGestureRecognizer.State.began:
@@ -117,8 +123,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                             let newItem = Item()
                             newItem.title = textField.text!
                             newItem.dateCreated = Date()
-                            newItem.order = currentCategory.items.count + 1
-                            currentCategory.items.append(newItem)
+                            if currentCategory.items.isEmpty{
+                                newItem.order = 0
+                                currentCategory.items.append(newItem)
+                            } else {
+                                newItem.order = currentCategory.items.count + 1
+                                currentCategory.items.append(newItem)
+                            }
                         }
                     } catch  {
                         print("Error saving new item, \(error)")
@@ -148,7 +159,10 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func loadItems(){
         
-        itemResults = selectedCategory?.items.sorted(byKeyPath: "order", ascending: true)
+        //itemResults = selectedCategory?.items.sorted(byKeyPath: "order", ascending: true)
+
+        itemResults = selectedCategory?.items
+
         
         tableView.reloadData()
     }
@@ -162,8 +176,14 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             editButtonItem.title = "Done"
         case false:
             editButtonItem.title = "Edit"
+            hideKeyBoard()
             loadItems()
         }
+        
+        for item in (selectedCategory?.items)!{
+            print("Order #\(item.order)")
+        }
+        
     }
     
     //MARK: - TableView DataSource Methods
@@ -179,10 +199,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if let item = itemResults?[indexPath.row] {
             cell.nameLabel.text = item.title
-        
+          
+            try! realm.write {
+            item.order = indexPath.row
+            }
+            
             if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage:(CGFloat(indexPath.row) / CGFloat(itemResults!.count))) {
                 cell.backgroundColor = color
-                //cell.textLabel?.textColor = ContrastColorOf(backgroundColor: color, returnFlat: true)
                 cell.nameLabel.textColor = ContrastColorOf(backgroundColor: color, returnFlat: true)
             }
             
@@ -195,40 +218,59 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         return cell
     }
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        return tableView.dequeueReusableHeaderFooterView(withIdentifier: headerId)
-//    }
     
     //MARK - TableViewDelegate Methods
     
-
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        edit()
         
-        if let originalTextLbl = tableView.cellForRow(at: indexPath) {
-            let textFieldPlace: CGRect = originalTextLbl.frame
-            let myTextField : UITextField = UITextField(frame: textFieldPlace)
-            myTextField.text = originalTextLbl.textLabel?.text
-            myTextField.backgroundColor = UIColor.white
-            //myTextField.backgroundColor = tableView.cellForRow(at: indexPath)?.backgroundColor
-            myTextField.textColor = ContrastColorOf(backgroundColor: (tableView.cellForRow(at: indexPath)?.backgroundColor)!, returnFlat: true)
-            myTextField.becomeFirstResponder()
-            tableView.addSubview(myTextField)
-        }
+        selectedIndex = indexPath.row
         
-        if let item = itemResults?[indexPath.row] {
-            do{
-                try realm.write {
-                    item.done = !item.done
-                }
-            } catch {
-                print("Error saving done status, \(error)")
+        print("index:\(indexPath.row), order# \(selectedCategory!.items[indexPath.row].order)")
+        
+            if let originalTextLbl = tableView.cellForRow(at: indexPath) {
+                let textFieldPlace: CGRect = originalTextLbl.frame
+                myTextField = UITextField(frame: textFieldPlace)
+                //let item = itemResults?[indexPath.row]
+                myTextField.text = itemResults?[indexPath.row].title
+                myTextField.backgroundColor = tableView.cellForRow(at: indexPath)?.backgroundColor
+                myTextField.textColor = ContrastColorOf(backgroundColor: (tableView.cellForRow(at: indexPath)?.backgroundColor)!, returnFlat: true)
+                myTextField.becomeFirstResponder()
+                tableView.addSubview(myTextField)
+                myTextField.delegate = self
             }
-        }
         
-            
+ // Done check funtionality to be move somewhere else.
+//        if let item = itemResults?[indexPath.row] {
+//            do{
+//                try realm.write {
+//                    item.done = !item.done
+//                }
+//            } catch {
+//                print("Error saving done status, \(error)")
+//            }
+//        }
         tableView.deselectRow(at: indexPath, animated: true)
         
+        loadItems()
+    }
+    
+    func updateCell(_ tableView: UITableView, at indexpathRow: Int){
+        print("Fuckkkk")
+        if let currentCategory = self.selectedCategory {
+            do {
+                try self.realm.write {
+                    let newItem = currentCategory.items[indexpathRow]
+                    newItem.title = myTextField.text!
+                    newItem.dateCreated = Date()
+                    newItem.order = currentCategory.items[indexpathRow].order
+                    currentCategory.items.replace(index: indexpathRow, object: newItem)
+                
+                }
+            } catch  {
+                print("Error updating new item, \(error)")
+            }
+        }
         loadItems()
     }
     
@@ -242,29 +284,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         
-        try! realm.write {
-            guard let items = itemResults else {fatalError("Error seting order #s")}
-            
-            let sourceObject = items[sourceIndexPath.row]
-            
-            let destinationObject = items[destinationIndexPath.row]
-            
-            let destinationObjectOrder = destinationObject.order
-            
-            if sourceIndexPath.row < destinationIndexPath.row {
-                for index in sourceIndexPath.row...destinationIndexPath.row {
-                    let object = items[index]
-                    object.order -= 1
-                }
-            } else {
-                for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
-                    let object = items[index]
-                    object.order += 1
-                }
-            }
-            sourceObject.order = destinationObjectOrder
-            itemResults = items
+        if sourceIndexPath != destinationIndexPath{
 
+        try! realm.write {
+            
+            itemResults?.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
+            
+            }
         }
         loadItems()
     }
@@ -277,14 +303,22 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         return .none
     }
     
-    
 }
 
 extension TodoListViewController: UISearchBarDelegate{
    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        itemResults = itemResults?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+//        itemResults = itemResults?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+        let queryResult = realm.objects(Item.self).filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
         
+        let converted = queryResult.reduce(List<Item>()) { (list, element) -> List<Item> in
+            list.append(element)
+            return list
+        }
+        
+        itemResults = converted
+        
+        //itemResults =
         DispatchQueue.main.async {
             searchBar.resignFirstResponder()
         }
@@ -331,4 +365,24 @@ extension TodoListViewController: SwipeTableViewCellDelegate{
         
         return options
     }
+}
+
+extension TodoListViewController: UITextFieldDelegate{
+    //TextField Delegate Methods
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+       hideKeyBoard()
+        updateCell(tableView, at: selectedIndex)
+        if tableView.isEditing{
+            tableView.setEditing(false, animated: true)
+        }
+        return true
+    }
+    
+    func hideKeyBoard(){
+        
+         myTextField.resignFirstResponder()
+        myTextField.removeFromSuperview()
+    }
+    
 }

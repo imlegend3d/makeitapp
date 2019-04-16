@@ -93,7 +93,6 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
             }
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.barTintColor = UIColor.flatBlackColorDark()?.darken(byPercentage: 0.05)
         navigationController?.navigationBar.tintColor = ContrastColorOf(backgroundColor: FlatBlack(), returnFlat: true)
@@ -200,9 +199,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
             }
             let sourceObject = items[sourceIndexPath.row]
             let destinationObject = items[destinationIndexPath.row]
-            
             let destinationObjectOrder = destinationObject.order
-            
             if sourceIndexPath.row < destinationIndexPath.row {
                 for index in sourceIndexPath.row...destinationIndexPath.row {
                     let object = items[index]
