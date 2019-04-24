@@ -51,6 +51,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(TodoListViewController.longPresseGestureRecognizer(_:)))
         tableView.addGestureRecognizer(longPress)
         
+//        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(TodoListViewController.rightSwipe(_:)))
+//        tableView.addGestureRecognizer(rightSwipeGesture)
+        
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(TodoListViewController.addItems))
         
          editButtonItem.action = #selector(edit)
@@ -68,6 +71,17 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         self.view.addSubview(tableView)
         
+        // Listen for keyboard events
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,10 +99,16 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+//    @objc func rightSwipe(_ recognizer: UISwipeGestureRecognizer){
+//        if recognizer.direction == UISwipeGestureRecognizer.Direction.right{
+//            print("RIGHT")
+//        }
+//    }
+    
     @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
         let state = longPress.state
-        let locationInView = longPress.location(in: tableView)
+       // let locationInView = longPress.location(in: tableView)
         //let indexPath = tableView.indexPathForRow(at: locationInView)
         
         switch state {
@@ -152,9 +172,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         present(alert,animated: true, completion: nil)
     }
     
-    //MARK: - Save item
-    
-    
     //MARK: - Load Items 
     
     func loadItems(){
@@ -177,13 +194,9 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         case false:
             editButtonItem.title = "Edit"
             hideKeyBoard()
+           //updateCell(tableView, at: selectedIndex)
             loadItems()
         }
-        
-        for item in (selectedCategory?.items)!{
-            print("Order #\(item.order)")
-        }
-        
     }
     
     //MARK: - TableView DataSource Methods
@@ -192,13 +205,25 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         return itemResults?.count ?? 1
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! MyCell
         
         cell.delegate = self
-        
+        cell.nameLabel.font = UIFont(name: "Marker Felt", size: 23)
+    
         if let item = itemResults?[indexPath.row] {
-            cell.nameLabel.text = item.title
+            let text = item.title
+            
+            //StrikeThrough line by checking on the done property of the cell
+            if item.done {
+                let attributedString = NSMutableAttributedString(string: text)
+                attributedString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString.length))
+                cell.nameLabel.attributedText = attributedString
+            } else {
+                let notDoneString = NSMutableAttributedString(string: text)
+                notDoneString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, notDoneString.length))
+                cell.nameLabel.attributedText = notDoneString
+            }
           
             try! realm.write {
             item.order = indexPath.row
@@ -226,7 +251,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         
         selectedIndex = indexPath.row
         
-        print("index:\(indexPath.row), order# \(selectedCategory!.items[indexPath.row].order)")
+        //print("index:\(indexPath.row), order# \(selectedCategory!.items[indexPath.row].order)")
         
             if let originalTextLbl = tableView.cellForRow(at: indexPath) {
                 let textFieldPlace: CGRect = originalTextLbl.frame
@@ -239,24 +264,14 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                 tableView.addSubview(myTextField)
                 myTextField.delegate = self
             }
-        
- // Done check funtionality to be move somewhere else.
-//        if let item = itemResults?[indexPath.row] {
-//            do{
-//                try realm.write {
-//                    item.done = !item.done
-//                }
-//            } catch {
-//                print("Error saving done status, \(error)")
-//            }
-//        }
+    
         tableView.deselectRow(at: indexPath, animated: true)
         
         loadItems()
     }
     
     func updateCell(_ tableView: UITableView, at indexpathRow: Int){
-        print("Fuckkkk")
+        
         if let currentCategory = self.selectedCategory {
             do {
                 try self.realm.write {
@@ -338,30 +353,53 @@ extension TodoListViewController: UISearchBarDelegate{
 
 extension TodoListViewController: SwipeTableViewCellDelegate{
     
+    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else {return nil}
-        
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
-            if let item = self.itemResults?[indexPath.row]{
-                do {
-                    try self.realm.write {
-                        self.realm.delete(item)
+        if orientation == .right {
+            
+            let deleteAction = SwipeAction(style: .destructive, title: "Delete") { (action, indexPath) in
+                if let item = self.itemResults?[indexPath.row]{
+                    do {
+                        try self.realm.write {
+                            self.realm.delete(item)
+                        }
+                    } catch {
+                        print("Error deleting category, \(error)")
                     }
-                } catch {
-                    print("Error deleting category, \(error)")
                 }
             }
+            
+            deleteAction.image = UIImage(named: "delete-icon")
+            
+            return [deleteAction]
+            
+        } else if orientation == .left {
+            
+                if let item = self.itemResults?[indexPath.row]{
+                    // when the user swipes from left to right the done property changes and is saved.
+                    do {
+                        try self.realm.write {
+                            item.done = !item.done
+                        }
+                    } catch {
+                        print("Error crossing category, \(error)")
+                    }
+                }
+           tableView.reloadData()
         }
-        
-        deleteAction.image = UIImage(named: "delete-icon")
-        
-        return [deleteAction]
+        return []
     }
     
     func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        
         var options = SwipeTableOptions()
-        options.expansionStyle = .destructive
-        options.transitionStyle = .reveal
+        
+        if orientation == .left {
+            //none
+        } else {
+            options.expansionStyle = .destructive
+            options.transitionStyle = .reveal
+        }
         
         return options
     }
@@ -377,6 +415,36 @@ extension TodoListViewController: UITextFieldDelegate{
             tableView.setEditing(false, animated: true)
         }
         return true
+    }
+    
+    @objc func keyboaardWillCahnge(notification: Notification){
+        //print("Keyboard will show: \(notification.name.rawValue)")
+        tableView.isScrollEnabled = true
+        guard let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardRect.height, right: 0.0)
+        tableView.contentInset = contentInsets
+        tableView.scrollIndicatorInsets = contentInsets
+
+        if notification.name == UIResponder.keyboardWillShowNotification || notification.name == UIResponder.keyboardWillChangeFrameNotification {
+            
+            var aRect : CGRect = self.view.frame
+            aRect.size.height -= keyboardRect.height
+                if (!aRect.contains(myTextField.frame.origin)){
+                    tableView.scrollRectToVisible(myTextField.frame, animated: false)
+                }
+        // view.frame.origin.y = -keyboardRect.height
+        } else {
+            view.frame.origin.y = 0
+            var info = notification.userInfo!
+            let keyboardSize = (info[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.size
+            let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: -keyboardSize!.height, right: 0.0)
+            tableView.contentInset = contentInsets
+            tableView.scrollIndicatorInsets = contentInsets
+            view.endEditing(true)
+            tableView.isScrollEnabled = false
+        }
     }
     
     func hideKeyBoard(){

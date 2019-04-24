@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationBarApperance = UINavigationBar.appearance()
         navigationBarApperance.tintColor = UIColor.white
         navigationBarApperance.barTintColor = UIColor.black
-        navigationBarApperance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBarApperance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont(name: "Marker Felt", size: 32)!]
         return true
     }
 

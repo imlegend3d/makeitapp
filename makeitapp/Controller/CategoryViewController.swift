@@ -49,8 +49,8 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
        
         //Navigation Bar
         navigationItem.title = "MakeIt"
-        navigationController?.navigationBar.prefersLargeTitles = true
         
+        navigationController?.navigationBar.prefersLargeTitles = true
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(CategoryViewController.addItems))
         
         editButtonItem.action = #selector(edit)
@@ -76,8 +76,8 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
         let state = longPress.state
-        let locationInView = longPress.location(in: tableView)
-        let indexPath = tableView.indexPathForRow(at: locationInView)
+       // let locationInView = longPress.location(in: tableView)
+        //let indexPath = tableView.indexPathForRow(at: locationInView)
 
         
         switch state {
@@ -158,6 +158,8 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         color = categories?[indexPath.row].color
         
         cell.backgroundColor = UIColor(hexString: color ?? "1D9BF6" )
+        
+        cell.nameLabel.font = UIFont(name: "Marker Felt", size: 28)
         
         cell.nameLabel.text = categories?[indexPath.row].name ?? "No Categories Added Yet"
         cell.nameLabel.textColor = ContrastColorOf(backgroundColor: UIColor(hexString: color), returnFlat: true)
