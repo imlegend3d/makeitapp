@@ -19,7 +19,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     
     private let cellId = "cellId"
     // private let headerId = "headerId"
-    // private let searchBarheight: Int = 40
     
     //var itemResults: Results<Item>?
     var itemResults: List<Item>?
@@ -51,16 +50,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(TodoListViewController.longPresseGestureRecognizer(_:)))
         tableView.addGestureRecognizer(longPress)
         
-//        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(TodoListViewController.rightSwipe(_:)))
-//        tableView.addGestureRecognizer(rightSwipeGesture)
-        
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(TodoListViewController.addItems))
         
          editButtonItem.action = #selector(edit)
         
         navigationItem.rightBarButtonItems = [addButton, editButtonItem]
-        //SearchBar setup
         
+        //SearchBar setup
         searchBar.searchBarStyle = UISearchBar.Style.prominent
         searchBar.placeholder = "Search..."
         searchBar.sizeToFit()
@@ -98,12 +94,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             
         }
     }
-    
-//    @objc func rightSwipe(_ recognizer: UISwipeGestureRecognizer){
-//        if recognizer.direction == UISwipeGestureRecognizer.Direction.right{
-//            print("RIGHT")
-//        }
-//    }
     
     @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
@@ -150,13 +140,15 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                                 newItem.order = currentCategory.items.count + 1
                                 currentCategory.items.append(newItem)
                             }
+                            self.tableView.reloadData()
                         }
                     } catch  {
                         print("Error saving new item, \(error)")
                     }
                 }
-                self.tableView.reloadData()
             }
+           self.tableView.isScrollEnabled = true
+            
         }
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel , handler: nil)
@@ -180,7 +172,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
 
         itemResults = selectedCategory?.items
 
-        
         tableView.reloadData()
     }
     
@@ -210,6 +201,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
         
         cell.delegate = self
         cell.nameLabel.font = UIFont(name: "Marker Felt", size: 23)
+        cell.nameLabel.numberOfLines = 0
     
         if let item = itemResults?[indexPath.row] {
             let text = item.title
@@ -219,6 +211,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
                 let attributedString = NSMutableAttributedString(string: text)
                 attributedString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString.length))
                 cell.nameLabel.attributedText = attributedString
+
             } else {
                 let notDoneString = NSMutableAttributedString(string: text)
                 notDoneString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, notDoneString.length))
@@ -311,7 +304,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
     }
     
     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
-        return true
+        return false
     }
     
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
@@ -323,8 +316,8 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
 extension TodoListViewController: UISearchBarDelegate{
    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        itemResults = itemResults?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
-        let queryResult = realm.objects(Item.self).filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+        if let queryResult = itemResults?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false){
+        //let queryResult = realm.objects(Item.self).filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
         
         let converted = queryResult.reduce(List<Item>()) { (list, element) -> List<Item> in
             list.append(element)
@@ -332,8 +325,8 @@ extension TodoListViewController: UISearchBarDelegate{
         }
         
         itemResults = converted
+        }
         
-        //itemResults =
         DispatchQueue.main.async {
             searchBar.resignFirstResponder()
         }
@@ -437,13 +430,13 @@ extension TodoListViewController: UITextFieldDelegate{
         // view.frame.origin.y = -keyboardRect.height
         } else {
             view.frame.origin.y = 0
-            var info = notification.userInfo!
-            let keyboardSize = (info[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.size
-            let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: -keyboardSize!.height, right: 0.0)
+            //var info = notification.userInfo!
+            //let keyboardSize = (info[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.size
+            let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
             tableView.contentInset = contentInsets
             tableView.scrollIndicatorInsets = contentInsets
+            tableView.isScrollEnabled = true
             view.endEditing(true)
-            tableView.isScrollEnabled = false
         }
     }
     
