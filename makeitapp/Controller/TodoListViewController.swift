@@ -34,8 +34,11 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     var myTextField : UITextField = UITextField(frame: CGRect.zero)
+    var newCell = MyCell(frame: CGRect.zero)
     
     var selectedIndex: Int = 0
+    
+    var selectedToDetailVC: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -196,13 +199,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         return itemResults?.count ?? 1
     }
     
-func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! MyCell
         
         cell.delegate = self
         cell.nameLabel.font = UIFont(name: "Marker Felt", size: 23)
         cell.nameLabel.numberOfLines = 0
-    
+        
         if let item = itemResults?[indexPath.row] {
             let text = item.title
             
@@ -211,15 +214,15 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
                 let attributedString = NSMutableAttributedString(string: text)
                 attributedString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString.length))
                 cell.nameLabel.attributedText = attributedString
-
+                
             } else {
                 let notDoneString = NSMutableAttributedString(string: text)
                 notDoneString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, notDoneString.length))
                 cell.nameLabel.attributedText = notDoneString
             }
-          
+            
             try! realm.write {
-            item.order = indexPath.row
+                item.order = indexPath.row
             }
             
             if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage:(CGFloat(indexPath.row) / CGFloat(itemResults!.count))) {
@@ -232,36 +235,42 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
             cell.accessoryType = item.done ? .checkmark : .none
         } else {
             cell.nameLabel.text = "No Items Added"
-        }
-        
-        return cell
+    
     }
+    return cell
+}
     
     //MARK - TableViewDelegate Methods
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        edit()
         
         selectedIndex = indexPath.row
         
-        //print("index:\(indexPath.row), order# \(selectedCategory!.items[indexPath.row].order)")
-        
-            if let originalTextLbl = tableView.cellForRow(at: indexPath) {
-                let textFieldPlace: CGRect = originalTextLbl.frame
+            if let originalCellLbl = tableView.cellForRow(at: indexPath) {
+                
+                newCell.frame = originalCellLbl.frame
+                let textFieldPlace = CGRect(x: (originalCellLbl.frame.origin.x + 8), y:           originalCellLbl.frame.origin.y, width: (originalCellLbl.frame.width - 50), height: originalCellLbl.frame.height)
                 myTextField = UITextField(frame: textFieldPlace)
-                //let item = itemResults?[indexPath.row]
+                myTextField.font = UIFont(name: "Marker Felt", size: 23)
                 myTextField.text = itemResults?[indexPath.row].title
                 myTextField.backgroundColor = tableView.cellForRow(at: indexPath)?.backgroundColor
                 myTextField.textColor = ContrastColorOf(backgroundColor: (tableView.cellForRow(at: indexPath)?.backgroundColor)!, returnFlat: true)
                 myTextField.becomeFirstResponder()
-                tableView.addSubview(myTextField)
                 myTextField.delegate = self
+                
+                newCell.accessoryType = .detailButton
+                
+                tableView.addSubview(newCell)
+                tableView.addSubview(myTextField)
+                
             }
     
         tableView.deselectRow(at: indexPath, animated: true)
         
         loadItems()
     }
+    
+    //MARK: - Update Cell
     
     func updateCell(_ tableView: UITableView, at indexpathRow: Int){
         
@@ -273,7 +282,6 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
                     newItem.dateCreated = Date()
                     newItem.order = currentCategory.items[indexpathRow].order
                     currentCategory.items.replace(index: indexpathRow, object: newItem)
-                
                 }
             } catch  {
                 print("Error updating new item, \(error)")
@@ -441,8 +449,9 @@ extension TodoListViewController: UITextFieldDelegate{
     }
     
     func hideKeyBoard(){
-        
+        selectedToDetailVC = false
          myTextField.resignFirstResponder()
+        newCell.removeFromSuperview()
         myTextField.removeFromSuperview()
     }
     
