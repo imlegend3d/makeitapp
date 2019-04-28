@@ -15,5 +15,6 @@ class Item: Object{
     @objc dynamic var dateCreated: Date?
     @objc dynamic var color: String = ""
     @objc dynamic var order = 0
+    
     var parentCategory = LinkingObjects(fromType: Category.self, property: "items")
 }

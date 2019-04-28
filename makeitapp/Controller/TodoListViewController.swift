@@ -245,7 +245,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         selectedIndex = indexPath.row
-        
+        // add cell and textfiled to the tableview when tapped - it displays the detail button and the cell can be edited.
             if let originalCellLbl = tableView.cellForRow(at: indexPath) {
                 
                 newCell.frame = originalCellLbl.frame
@@ -268,6 +268,16 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.deselectRow(at: indexPath, animated: true)
         
         loadItems()
+    }
+    
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        showDetailVC(at: indexPath)
+    }
+    
+    func showDetailVC(at index: IndexPath){
+        let detailViewController = DetailViewController()
+        navigationController?.pushViewController(detailViewController, animated: true)
+        //navigationController?.showDetailViewController(detailViewController, sender: self)
     }
     
     //MARK: - Update Cell
