@@ -54,10 +54,13 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.addGestureRecognizer(longPress)
         
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(TodoListViewController.addItems))
+       
+        // create and add uibarbutton with image to the navBar
+       let shareButton = UIBarButtonItem( image: UIImage(named: "share3")?.withRenderingMode(.alwaysOriginal), style: .plain ,target: self, action: #selector(TodoListViewController.shareList))
         
-         editButtonItem.action = #selector(edit)
+        editButtonItem.action = #selector(edit)
         
-        navigationItem.rightBarButtonItems = [addButton, editButtonItem]
+        navigationItem.rightBarButtonItems = [addButton, editButtonItem, shareButton]
         
         //SearchBar setup
         searchBar.searchBarStyle = UISearchBar.Style.prominent
@@ -74,7 +77,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboaardWillCahnge(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        
     }
     
     deinit {
@@ -94,7 +96,8 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
             navBar.tintColor = ContrastColorOf(backgroundColor: UIColor(hexString: colorHex), returnFlat: true)
             
             searchBar.barTintColor = UIColor(hexString: colorHex)
-            
+            //tableView.backgroundColor = UIColor(hexString: colorHex)
+            tableView.backgroundColor = FlatBlack()
         }
     }
     
@@ -107,15 +110,19 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         switch state {
         case UIGestureRecognizer.State.began:
             edit()
-            //        case UIGestureRecognizer.State.changed:
-            //
-            //        case UIGestureRecognizer.State.cancelled:
-            //        case .ended:
-        //            edit()
+
         default:
             print("default")
         }
         
+    }
+    
+    //MARK: - Share list
+    
+    @objc func shareList(){
+        let contactsVC = ContactsViewController()
+        contactsVC.category = self.selectedCategory
+        navigationController?.pushViewController(contactsVC, animated: true)
     }
     
     //MARK - Add new items
@@ -136,6 +143,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
                             let newItem = Item()
                             newItem.title = textField.text!
                             newItem.dateCreated = Date()
+                            newItem.color = currentCategory.color
                             if currentCategory.items.isEmpty{
                                 newItem.order = 0
                                 currentCategory.items.append(newItem)
@@ -276,6 +284,7 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func showDetailVC(at index: IndexPath){
         let detailViewController = DetailViewController()
+        detailViewController.item = selectedCategory?.items[index.item]
         navigationController?.pushViewController(detailViewController, animated: true)
         //navigationController?.showDetailViewController(detailViewController, sender: self)
     }

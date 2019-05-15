@@ -12,6 +12,8 @@
 		63051A3D22548C98004CF23E /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63051A3C22548C98004CF23E /* Item.swift */; };
 		63051A3F22549C2F004CF23E /* TodoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63051A3E22549C2F004CF23E /* TodoListViewController.swift */; };
 		630E84402274EE3100855C58 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630E843F2274EE3100855C58 /* DetailViewController.swift */; };
+		63382C5D2286BB95001A46FB /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C5C2286BB95001A46FB /* ContactsViewController.swift */; };
+		63382C66228CADCF001A46FB /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C65228CADCF001A46FB /* ContactCell.swift */; };
 		63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1C2251C89E00819465 /* AppDelegate.swift */; };
 		63DD3E1F2251C89E00819465 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* CategoryViewController.swift */; };
 		63DD3E222251C89E00819465 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E202251C89E00819465 /* Main.storyboard */; };
@@ -26,6 +28,8 @@
 		63051A3C22548C98004CF23E /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		63051A3E22549C2F004CF23E /* TodoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListViewController.swift; sourceTree = "<group>"; };
 		630E843F2274EE3100855C58 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		63382C5C2286BB95001A46FB /* ContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
+		63382C65228CADCF001A46FB /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		63DD3E192251C89E00819465 /* makeitapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = makeitapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DD3E1C2251C89E00819465 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63DD3E1E2251C89E00819465 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 				63DD3E1E2251C89E00819465 /* CategoryViewController.swift */,
 				63051A3E22549C2F004CF23E /* TodoListViewController.swift */,
 				630E843F2274EE3100855C58 /* DetailViewController.swift */,
+				63382C5C2286BB95001A46FB /* ContactsViewController.swift */,
+				63382C65228CADCF001A46FB /* ContactCell.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -219,6 +225,7 @@
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/Swift-Icons/Swift_Icons.framework",
 				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
@@ -232,6 +239,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Swift_Icons.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
@@ -270,7 +278,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63382C66228CADCF001A46FB /* ContactCell.swift in Sources */,
 				63051A3D22548C98004CF23E /* Item.swift in Sources */,
+				63382C5D2286BB95001A46FB /* ContactsViewController.swift in Sources */,
 				63DD3E1F2251C89E00819465 /* CategoryViewController.swift in Sources */,
 				63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */,
 				630E84402274EE3100855C58 /* DetailViewController.swift in Sources */,
@@ -352,7 +362,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -407,7 +417,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
