@@ -8,16 +8,18 @@
 
 import UIKit
 import ChameleonFramework
+import Contacts
+import RealmSwift
 
 struct expandableContacts{
     
     var isExpanded: Bool
-    var names: [Contact]
+    var names: [MyContact]
     
 }
 
-struct Contact {
-    let name : String
+struct MyContact {
+    let contact: CNContact
     var isShared: Bool
 }
 
@@ -29,14 +31,13 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     let cellID = "cell"
     
-    var contacts = [
-        expandableContacts(isExpanded: true, names: [Contact(name: "Luisa", isShared: false), Contact(name: "Fernanda", isShared: false), Contact(name: "Cuddles", isShared: false)]),
-        expandableContacts(isExpanded: true, names: ["Diana","Carolina", "Karen", "Paola", "Eliabeth", "Jose"].map{Contact(name: $0, isShared: false)}),
-        expandableContacts(isExpanded: true, names: ["Cristina", "Chimoltrufia", "Alexander", "Alexandra aka Popo"].map{Contact(name: $0, isShared: false)})
-    ]
+    var contacts: [expandableContacts] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchContacts()
+        
         view.backgroundColor = FlatBlack()
         navigationItem.title = "Contacts"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -48,6 +49,47 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.register(ContactCell.self, forCellReuseIdentifier: cellID)
         
         view.addSubview(tableView)
+    }
+    
+    func fetchContacts() {
+        
+        let store = CNContactStore()
+        
+        store.requestAccess(for: .contacts) { (granted, err) in
+            if let err = err {
+                print("Failed to request access", err)
+                return
+            }
+
+            if granted {
+                let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey, CNContactEmailAddressesKey]
+
+                let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+
+                do {
+                    
+                    var myContacts = [MyContact]()
+                    
+                    try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointerStopEnumarating ) in
+                        print(contact.givenName)
+                        print(contact.familyName)
+                        print(contact.phoneNumbers.first?.value.stringValue ?? "")
+                        
+                        myContacts.append(MyContact(contact: contact, isShared: false))
+                    })
+                    
+                    let names = expandableContacts(isExpanded: true, names: myContacts)
+                    
+                    self.contacts = [names]
+                    
+                } catch let err {
+                    print("Failed to enumarate contacts", err)
+                }
+
+            } else {
+                print("Access denied")
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -117,15 +159,20 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! ContactCell
+        //let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! ContactCell
+        
+        let cell = ContactCell(style: .subtitle, reuseIdentifier: cellID)
         
         cell.link = self
         
-        let contact = contacts[indexPath.section].names[indexPath.row]
+        let cellContact = contacts[indexPath.section].names[indexPath.row]
         
-        cell.textLabel?.text = contact.name
+        cell.textLabel?.text = cellContact.contact.givenName + " " + cellContact.contact.familyName
+        cell.textLabel?.font = UIFont(name: "Marker felt", size: 18)
+       
+        cell.detailTextLabel?.text = cellContact.contact.phoneNumbers.first?.value.stringValue
         
-        cell.accessoryView?.tintColor = contact.isShared ? FlatPurple() : FlatGray()
+        cell.accessoryView?.tintColor = cellContact.isShared ? FlatPurple() : FlatGray()
         
         return cell
     }
