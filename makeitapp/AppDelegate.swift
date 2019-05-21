@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let controller = CategoryViewController()
+        let controller = LogInViewController()
         let navigationController = UINavigationController(rootViewController: controller)
         window?.rootViewController = navigationController
         let navigationBarApperance = UINavigationBar.appearance()

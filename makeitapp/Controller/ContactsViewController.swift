@@ -40,7 +40,8 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
         
         view.backgroundColor = FlatBlack()
         navigationItem.title = "Contacts"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationController?.navigationBar.barStyle = .default
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -71,9 +72,6 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
                     var myContacts = [MyContact]()
                     
                     try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointerStopEnumarating ) in
-                        print(contact.givenName)
-                        print(contact.familyName)
-                        print(contact.phoneNumbers.first?.value.stringValue ?? "")
                         
                         myContacts.append(MyContact(contact: contact, isShared: false))
                     })
@@ -133,12 +131,12 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
         guard let indexPathTapped = tableView.indexPath(for: cell) else {return}
         
         let contact = contacts[indexPathTapped.section].names[indexPathTapped.row]
-        print(contact)
         
         let isShared = contact.isShared
         contacts[indexPathTapped.section].names[indexPathTapped.row].isShared = !isShared
-        
-        cell.accessoryView?.tintColor = isShared ? FlatGray() : FlatPurple()
+    
+        cell.accessoryView?.tintColor = !isShared ? FlatPurple() : FlatGray()
+      
     }
     
     

@@ -88,6 +88,8 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewWillAppear(_ animated: Bool) {
         if let colorHex = selectedCategory?.color{
             
+            navigationController?.navigationBar.prefersLargeTitles = true
+            
             title = selectedCategory!.name
             
             guard let navBar = navigationController?.navigationBar else {fatalError("Navigation Controller does not exist")}

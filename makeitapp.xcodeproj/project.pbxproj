@@ -14,6 +14,7 @@
 		630E84402274EE3100855C58 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630E843F2274EE3100855C58 /* DetailViewController.swift */; };
 		63382C5D2286BB95001A46FB /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C5C2286BB95001A46FB /* ContactsViewController.swift */; };
 		63382C66228CADCF001A46FB /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C65228CADCF001A46FB /* ContactCell.swift */; };
+		63382C6822938E46001A46FB /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C6722938E46001A46FB /* LogInViewController.swift */; };
 		63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1C2251C89E00819465 /* AppDelegate.swift */; };
 		63DD3E1F2251C89E00819465 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* CategoryViewController.swift */; };
 		63DD3E222251C89E00819465 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E202251C89E00819465 /* Main.storyboard */; };
@@ -30,6 +31,7 @@
 		630E843F2274EE3100855C58 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		63382C5C2286BB95001A46FB /* ContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
 		63382C65228CADCF001A46FB /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
+		63382C6722938E46001A46FB /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		63DD3E192251C89E00819465 /* makeitapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = makeitapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DD3E1C2251C89E00819465 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63DD3E1E2251C89E00819465 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 		63051A3622533D0C004CF23E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				63382C6722938E46001A46FB /* LogInViewController.swift */,
 				63DD3E1E2251C89E00819465 /* CategoryViewController.swift */,
 				63051A3E22549C2F004CF23E /* TodoListViewController.swift */,
 				630E843F2274EE3100855C58 /* DetailViewController.swift */,
@@ -280,6 +283,7 @@
 			files = (
 				63382C66228CADCF001A46FB /* ContactCell.swift in Sources */,
 				63051A3D22548C98004CF23E /* Item.swift in Sources */,
+				63382C6822938E46001A46FB /* LogInViewController.swift in Sources */,
 				63382C5D2286BB95001A46FB /* ContactsViewController.swift in Sources */,
 				63DD3E1F2251C89E00819465 /* CategoryViewController.swift in Sources */,
 				63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */,
