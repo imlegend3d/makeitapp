@@ -21,6 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //Setting up Firebase
         FirebaseApp.configure()
         
+        var ref: DatabaseReference!
+        
+        ref = Database.database().reference()
+        
         //Setting up Realm persistance container
        
         do {
