@@ -29,6 +29,11 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //user not logged in
+        if Auth.auth().currentUser?.uid == nil {
+          handleLogout()
+        }
+        
         loadCategories()
         
         tableView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
@@ -53,13 +58,28 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationController?.navigationBar.prefersLargeTitles = true
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(CategoryViewController.addItems))
         
+        let logOutButton = UIBarButtonItem(title: "Logout", style: .done, target: self, action: #selector(handleLogout))
+        
         editButtonItem.action = #selector(edit)
+        
+        navigationItem.leftBarButtonItems = [logOutButton]
         
         navigationItem.rightBarButtonItems = [addButton, editButtonItem]
        
         
         //Realm
         categories = realm.objects(Category.self).sorted(byKeyPath: "order")
+    }
+    
+    @objc private func handleLogout(){
+        do {
+            try Auth.auth().signOut()
+        } catch let error {
+            print("Error while signing out", error)
+        }
+        
+        let loginVC = LogInViewController()
+        present(loginVC, animated: true, completion: nil)
     }
     
     @objc func edit(){
