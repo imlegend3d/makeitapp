@@ -7,15 +7,17 @@
 //
 
 import UIKit
-import Firebase
 import RealmSwift
 import ChameleonFramework
+import Firebase
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+   
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         //Setting up Firebase
@@ -24,6 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var ref: DatabaseReference!
         
         ref = Database.database().reference()
+        
+        //Setting up Facebook Core
+        ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         
         //Setting up Realm persistance container
        
@@ -46,6 +51,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarApperance.barTintColor = UIColor.black
         navigationBarApperance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont(name: "Marker Felt", size: 32)!]
         return true
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+       
+        let handled: Bool = ApplicationDelegate.shared.application(app, open: url, sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+        
+        return handled
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

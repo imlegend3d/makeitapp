@@ -9,10 +9,12 @@
 import UIKit
 import ChameleonFramework
 import Firebase
+import FBSDKLoginKit
+import FacebookLogin
+import FacebookCore
 
 
-class LogInViewController: UIViewController {
-
+class LogInViewController: UIViewController, LoginButtonDelegate {
 
     private let appTitle: UILabel = {
         let label = UILabel(frame: CGRect.zero)
@@ -91,6 +93,12 @@ class LogInViewController: UIViewController {
         return imageView
     }()
     
+    let facebookLoginButton: FBLoginButton = {
+        let button = FBLoginButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     lazy var logingRegisterSegmentedControl: UISegmentedControl = {
         let segmentControl = UISegmentedControl(items: ["Login", "Register"])
         segmentControl.tintColor = UIColor.white
@@ -109,18 +117,23 @@ class LogInViewController: UIViewController {
         view.addSubview(loginRegisterButton)
         view.addSubview(profileView)
         view.addSubview(logingRegisterSegmentedControl)
-    
+        view.addSubview(facebookLoginButton)
+        facebookLoginButton.delegate = self
+        
         
         setUpInputContainerView()
         setUpLoginRegisterButton()
         setupProfileImageView()
         setupTittle()
         setUpSegmentControlView()
+        setupFacebookButton()
     
     }
     override func viewWillAppear(_ animated: Bool) {
        // navigationController?.navigationBar.prefersLargeTitles = false
     }
+    
+    //MARK: - Handler methods
     
     @objc private func handleLoginResister(){
         if logingRegisterSegmentedControl.selectedSegmentIndex == 0{
@@ -183,6 +196,53 @@ class LogInViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    //Facebook Login methods
+    private func checkForFaceBookLoginStatus() {
+        
+        if let accessToken = AccessToken.current {
+            print("User already logged in with Facebook token")
+            print(accessToken)
+             // Send to other VC
+            showViewController()
+            
+        } else {
+            
+            let FBManager = LoginManager()
+            FBManager.logIn(permissions: [Permission.publicProfile, Permission.userPhotos], viewController: self) { (loginResults) in
+                switch loginResults {
+                case .failed(let err):
+                    print(err)
+                case .cancelled:
+                    print("Cancelled login")
+                case.success(granted: _, declined: _, token: _):
+                    print("Logged in")
+                    
+                    // Send to other VC
+                    self.showViewController()
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        print("user facebook logged in")
+        checkForFaceBookLoginStatus()
+
+    }
+
+    func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
+        
+        if AccessToken.current == nil {
+           print("User Facebook logged out")
+        }
+    }
+
+    
+    //MARK: - UI set up methods
+    
     @objc private func handleLoginRegisterChange(){
         let title = logingRegisterSegmentedControl.titleForSegment(at: logingRegisterSegmentedControl.selectedSegmentIndex)
         loginRegisterButton.setTitle(title, for: .normal)
@@ -204,6 +264,13 @@ class LogInViewController: UIViewController {
         passwordTextFieldHeightAnchor?.isActive = false
         passwordTextFieldHeightAnchor = passWordTextField.heightAnchor.constraint(equalTo: inputContainerView.heightAnchor, multiplier: logingRegisterSegmentedControl.selectedSegmentIndex == 0 ? 1/2 : 1/3)
         passwordTextFieldHeightAnchor?.isActive = true
+    }
+    
+    private func setupFacebookButton(){
+        facebookLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        facebookLoginButton.topAnchor.constraint(equalTo: loginRegisterButton.bottomAnchor, constant: 50).isActive = true
+        facebookLoginButton.widthAnchor.constraint(equalTo: loginRegisterButton.widthAnchor).isActive = true
+        //facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     private func setupTittle(){

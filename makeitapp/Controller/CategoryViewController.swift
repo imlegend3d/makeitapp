@@ -11,6 +11,7 @@ import RealmSwift
 import Firebase
 import SwipeCellKit
 import ChameleonFramework
+import FBSDKLoginKit
 
 
 class CategoryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -71,7 +72,15 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         categories = realm.objects(Category.self).sorted(byKeyPath: "order")
     }
     
+    //MARK: - Logout methods
+    
     @objc private func handleLogout(){
+        
+        if AccessToken.current != nil {
+            facebookLogOut()
+            
+        }
+        
         do {
             try Auth.auth().signOut()
         } catch let error {
@@ -82,7 +91,17 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         present(loginVC, animated: true, completion: nil)
     }
     
-    @objc func edit(){
+    private func facebookLogOut() {
+        let loginManager = LoginManager()
+        loginManager.logOut()
+        
+        if AccessToken.current == nil {
+            
+            print("User Facebook logged out")
+        }
+    }
+    
+    @objc private func edit(){
         tableView.isEditing = !tableView.isEditing
 
         switch tableView.isEditing {
@@ -93,7 +112,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    @objc func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
+    @objc private func longPresseGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer){
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
         let state = longPress.state
        // let locationInView = longPress.location(in: tableView)
@@ -103,11 +122,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         switch state {
         case UIGestureRecognizer.State.began:
            edit()
-//        case UIGestureRecognizer.State.changed:
-//
-//        case UIGestureRecognizer.State.cancelled:
-//        case .ended:
-//            edit()
+
         default:
             print("default")
             }
@@ -121,7 +136,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK - Add new category
     
-    @objc func addItems(){
+    @objc private func addItems(){
         
         var textField = UITextField()
         
@@ -155,7 +170,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - Load Categories
     
-    func loadCategories(){
+    private func loadCategories(){
     
         categories = realm.objects(Category.self)
         
