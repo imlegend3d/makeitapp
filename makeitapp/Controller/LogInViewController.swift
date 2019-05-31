@@ -12,9 +12,11 @@ import Firebase
 import FBSDKLoginKit
 import FacebookLogin
 import FacebookCore
+import GoogleSignIn
 
 
-class LogInViewController: UIViewController, LoginButtonDelegate {
+class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate {
+    
 
     private let appTitle: UILabel = {
         let label = UILabel(frame: CGRect.zero)
@@ -99,6 +101,12 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
         return button
     }()
     
+    let googleSignInButton: GIDSignInButton = {
+        let button = GIDSignInButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     lazy var logingRegisterSegmentedControl: UISegmentedControl = {
         let segmentControl = UISegmentedControl(items: ["Login", "Register"])
         segmentControl.tintColor = UIColor.white
@@ -118,8 +126,10 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
         view.addSubview(profileView)
         view.addSubview(logingRegisterSegmentedControl)
         view.addSubview(facebookLoginButton)
+        view.addSubview(googleSignInButton)
         facebookLoginButton.delegate = self
-        
+        facebookLoginButton.permissions = ["email", "public_profile"]
+        GIDSignIn.sharedInstance()?.uiDelegate = self as? GIDSignInUIDelegate
         
         setUpInputContainerView()
         setUpLoginRegisterButton()
@@ -127,6 +137,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
         setupTittle()
         setUpSegmentControlView()
         setupFacebookButton()
+        setupGoogleButton()
     
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -195,6 +206,11 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
     private func showViewController(){
         self.dismiss(animated: true, completion: nil)
     }
+    // Google Login Methods
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        
+    }
     
     //Facebook Login methods
     private func checkForFaceBookLoginStatus() {
@@ -204,33 +220,68 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
             print(accessToken)
              // Send to other VC
             showViewController()
-            
-        } else {
-            
-            let FBManager = LoginManager()
-            FBManager.logIn(permissions: [Permission.publicProfile, Permission.userPhotos], viewController: self) { (loginResults) in
-                switch loginResults {
-                case .failed(let err):
-                    print(err)
-                case .cancelled:
-                    print("Cancelled login")
-                case.success(granted: _, declined: _, token: _):
-                    print("Logged in")
-                    
-                    // Send to other VC
-                    self.showViewController()
-                }
-                
-            }
-            
-        }
-        
+       } // else {
+//            let FBManager = LoginManager()
+//            FBManager.logIn(permissions: [Permission.publicProfile, Permission.userPhotos, .email], viewController: self) { (loginResults) in
+//                switch loginResults {
+//                case .failed(let err):
+//                    print(err)
+//                case .cancelled:
+//                    print("Cancelled login")
+//                case.success(granted: _, declined: _, token: _):
+//                    print("Logged in")
+//                }
+//            }
+//            showViewController()
+//        }
     }
     
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+    
+        if error != nil {
+            print(error as Any)
+            return
+        }
         print("user facebook logged in")
+        
+//        GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email"]).start { (connection , result, err) in
+//            if err != nil {
+//                print("Failed to start graph request", err)
+//                return
+//            }
+//            //prints email, name and Id
+//            print(result!)
+    //}
+        firebaseLoginwithFacebook()
+        
         checkForFaceBookLoginStatus()
 
+    }
+    
+    private func firebaseLoginwithFacebook(){
+        
+        let accessToken = AccessToken.current
+        guard let accessTokenString = accessToken?.tokenString else {return}
+        
+        let credentials = FacebookAuthProvider.credential(withAccessToken: accessTokenString)
+        
+        Auth.auth().signIn(with: credentials) { user, error in
+            if error != nil{
+                print("Error with Firebase authentication using Facebook credentials", error ?? "")
+                return
+            }
+            
+            print("Firebase Authenticated using Facebook Credentials: ", user ?? "")
+        }
+        
+        GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email"]).start { (connection , result, err) in
+            if err != nil {
+                print("Failed to start graph request", err ?? "")
+                return
+            }
+            //prints email, name and Id
+            print(result!)
+        }
     }
 
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
@@ -266,11 +317,21 @@ class LogInViewController: UIViewController, LoginButtonDelegate {
         passwordTextFieldHeightAnchor?.isActive = true
     }
     
+    private func setupGoogleButton(){
+        googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        googleSignInButton.topAnchor.constraint(equalTo: facebookLoginButton.bottomAnchor, constant: 12).isActive = true
+        googleSignInButton.widthAnchor.constraint(equalTo: facebookLoginButton.widthAnchor).isActive = true
+        googleSignInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
     private func setupFacebookButton(){
+        facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         facebookLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         facebookLoginButton.topAnchor.constraint(equalTo: loginRegisterButton.bottomAnchor, constant: 50).isActive = true
         facebookLoginButton.widthAnchor.constraint(equalTo: loginRegisterButton.widthAnchor).isActive = true
-        //facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        
     }
     
     private func setupTittle(){

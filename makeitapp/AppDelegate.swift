@@ -12,9 +12,12 @@ import ChameleonFramework
 import Firebase
 import FBSDKCoreKit
 import FBSDKLoginKit
+import GoogleSignIn
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+ 
+    
 
     var window: UIWindow?
    
@@ -23,6 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //Setting up Firebase
         FirebaseApp.configure()
         
+        //Setting up GoogleSingin
+        GIDSignIn.sharedInstance()?.clientID = FirebaseApp.app()?.options.clientID
+        GIDSignIn.sharedInstance()?.delegate = self
+        
+        //Setting up database
         var ref: DatabaseReference!
         
         ref = Database.database().reference()
@@ -53,9 +61,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    //delegate method for GoolgeSignIn
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        
+    }
+    
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-       
+
         let handled: Bool = ApplicationDelegate.shared.application(app, open: url, sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+        GIDSignIn.sharedInstance().handle(url,sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+        
         
         return handled
     }
