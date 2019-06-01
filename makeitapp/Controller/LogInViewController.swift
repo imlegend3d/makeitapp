@@ -345,11 +345,17 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         googleSignInButton.topAnchor.constraint(equalTo: facebookLoginButton.bottomAnchor, constant: 12).isActive = true
         googleSignInButton.widthAnchor.constraint(equalTo: facebookLoginButton.widthAnchor).isActive = true
-        googleSignInButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        googleSignInButton.heightAnchor.constraint(equalToConstant: 28).isActive = true
     }
     
     private func setupFacebookButton(){
-        facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        //disabled the set constraint by the Facebook SDK.
+        for constraint in facebookLoginButton.constraints{
+            if constraint.firstAttribute == .height {
+                constraint.isActive = false
+            }
+        }
+        //Set custom constraints 
         facebookLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         facebookLoginButton.topAnchor.constraint(equalTo: loginRegisterButton.bottomAnchor, constant: 50).isActive = true
         facebookLoginButton.widthAnchor.constraint(equalTo: loginRegisterButton.widthAnchor).isActive = true
