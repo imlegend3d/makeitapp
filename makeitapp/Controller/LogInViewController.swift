@@ -15,7 +15,7 @@ import FacebookCore
 import GoogleSignIn
 
 
-class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate {
+class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate, GIDSignInUIDelegate{
     
 
     private let appTitle: UILabel = {
@@ -104,6 +104,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     let googleSignInButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(signIn), for: .touchUpInside)
         return button
     }()
     
@@ -129,7 +130,9 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         view.addSubview(googleSignInButton)
         facebookLoginButton.delegate = self
         facebookLoginButton.permissions = ["email", "public_profile"]
-        GIDSignIn.sharedInstance()?.uiDelegate = self as? GIDSignInUIDelegate
+        GIDSignIn.sharedInstance()?.uiDelegate = self
+        GIDSignIn.sharedInstance()?.delegate = self
+        //GIDSignIn.sharedInstance()?.signIn()
         
         setUpInputContainerView()
         setUpLoginRegisterButton()
@@ -200,7 +203,6 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                 
             })
         }
-       
     }
     
     private func showViewController(){
@@ -208,8 +210,30 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     }
     // Google Login Methods
     
+    @objc func signIn(){
+       
+        //GIDSignIn.sharedInstance()?.signIn()
+        //543073452190-gr1ekolcfqnb3g9ar65c4oo97lf709oo.apps.googleusercontent.com
+
+    }
+    
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if error != nil {
+            print("Error signing in ",error)
+            return
+        }
+        guard let authentication = user.authentication else {return}
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
         
+        Auth.auth().signIn(with: credential) { (user, error) in
+            if error != nil {
+                print("Error Authenticating credentials ",error ?? "")
+                return
+            }
+            
+            print("user signed in, authenticated using firebase: ",user ?? "USER")
+            self.showViewController()
+        }
     }
     
     //Facebook Login methods
@@ -330,8 +354,6 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         facebookLoginButton.topAnchor.constraint(equalTo: loginRegisterButton.bottomAnchor, constant: 50).isActive = true
         facebookLoginButton.widthAnchor.constraint(equalTo: loginRegisterButton.widthAnchor).isActive = true
         facebookLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        
     }
     
     private func setupTittle(){

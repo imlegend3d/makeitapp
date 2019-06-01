@@ -12,6 +12,7 @@ import Firebase
 import SwipeCellKit
 import ChameleonFramework
 import FBSDKLoginKit
+import GoogleSignIn
 
 
 class CategoryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -76,11 +77,8 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     
     @objc private func handleLogout(){
         
-        if AccessToken.current != nil {
-            facebookLogOut()
-            
-        }
-        
+        facebookLogOut()
+        googleLogOut()
         do {
             try Auth.auth().signOut()
         } catch let error {
@@ -99,6 +97,11 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
             
             print("User Facebook logged out")
         }
+    }
+    
+    private func googleLogOut(){
+        GIDSignIn.sharedInstance()?.signOut()
+         print("Google logged out")
     }
     
     @objc private func edit(){
