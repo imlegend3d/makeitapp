@@ -122,9 +122,15 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - Share list
     
     @objc func shareList(){
+        
         let contactsVC = ContactsViewController()
         contactsVC.category = self.selectedCategory
-        navigationController?.pushViewController(contactsVC, animated: true)
+        
+        let tabBarVC = TabBarViewController()
+        tabBarVC.tabBarCtlr?.viewControllers?[0] = contactsVC
+        
+        
+        navigationController?.pushViewController(tabBarVC, animated: true)
     }
     
     //MARK - Add new items

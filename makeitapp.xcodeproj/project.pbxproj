@@ -15,6 +15,7 @@
 		63382C5D2286BB95001A46FB /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C5C2286BB95001A46FB /* ContactsViewController.swift */; };
 		63382C66228CADCF001A46FB /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C65228CADCF001A46FB /* ContactCell.swift */; };
 		63382C6822938E46001A46FB /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63382C6722938E46001A46FB /* LogInViewController.swift */; };
+		6380144322BB5842001260E1 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6380144222BB5842001260E1 /* TabBarViewController.swift */; };
 		63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1C2251C89E00819465 /* AppDelegate.swift */; };
 		63DD3E1F2251C89E00819465 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63DD3E1E2251C89E00819465 /* CategoryViewController.swift */; };
 		63DD3E222251C89E00819465 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63DD3E202251C89E00819465 /* Main.storyboard */; };
@@ -33,6 +34,7 @@
 		63382C65228CADCF001A46FB /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		63382C6722938E46001A46FB /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		63382C6922A19784001A46FB /* makeitapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = makeitapp.entitlements; sourceTree = "<group>"; };
+		6380144222BB5842001260E1 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		63DD3E192251C89E00819465 /* makeitapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = makeitapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63DD3E1C2251C89E00819465 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		63DD3E1E2251C89E00819465 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				63382C6722938E46001A46FB /* LogInViewController.swift */,
 				63DD3E1E2251C89E00819465 /* CategoryViewController.swift */,
 				63051A3E22549C2F004CF23E /* TodoListViewController.swift */,
+				6380144222BB5842001260E1 /* TabBarViewController.swift */,
 				630E843F2274EE3100855C58 /* DetailViewController.swift */,
 				63382C5C2286BB95001A46FB /* ContactsViewController.swift */,
 				63382C65228CADCF001A46FB /* ContactCell.swift */,
@@ -331,6 +334,7 @@
 				63DD3E1D2251C89E00819465 /* AppDelegate.swift in Sources */,
 				630E84402274EE3100855C58 /* DetailViewController.swift in Sources */,
 				63051A3B22548C3F004CF23E /* Category.swift in Sources */,
+				6380144322BB5842001260E1 /* TabBarViewController.swift in Sources */,
 				63051A3F22549C2F004CF23E /* TodoListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

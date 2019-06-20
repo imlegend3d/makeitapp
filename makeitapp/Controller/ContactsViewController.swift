@@ -174,8 +174,5 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
         
         return cell
     }
-    
-
-
 
 }
