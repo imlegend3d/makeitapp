@@ -31,18 +31,15 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
     
     let cellID = "cell"
     
+    let titleVC = "Contacts"
+    
     var contacts: [expandableContacts] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetchContacts()
-        
-        view.backgroundColor = FlatBlack()
-        navigationItem.title = "Contacts"
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.navigationBar.barStyle = .default
-        
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
@@ -50,7 +47,9 @@ class ContactsViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.register(ContactCell.self, forCellReuseIdentifier: cellID)
         
         view.addSubview(tableView)
+        
     }
+    
     
     func fetchContacts() {
         

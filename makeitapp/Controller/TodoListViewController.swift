@@ -14,7 +14,8 @@ import ChameleonFramework
 
 class TodoListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
-   
+    var window: UIWindow?
+    
     let realm = try! Realm()
     
     private let cellId = "cellId"
@@ -122,15 +123,14 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - Share list
     
     @objc func shareList(){
+    
+        let newVCWithTabbar = TabBarVC()
+
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.pushViewController(newVCWithTabbar, animated: true)
+        //navigationController?.show(newVCWithTabbar, sender: self)
+        //present(newVCWithTabbar, animated: true, completion: nil)
         
-        let contactsVC = ContactsViewController()
-        contactsVC.category = self.selectedCategory
-        
-        let tabBarVC = TabBarViewController()
-        tabBarVC.tabBarCtlr?.viewControllers?[0] = contactsVC
-        
-        
-        navigationController?.pushViewController(tabBarVC, animated: true)
     }
     
     //MARK - Add new items
@@ -294,7 +294,6 @@ class TodoListViewController: UIViewController, UITableViewDataSource, UITableVi
         let detailViewController = DetailViewController()
         detailViewController.item = selectedCategory?.items[index.item]
         navigationController?.pushViewController(detailViewController, animated: true)
-        //navigationController?.showDetailViewController(detailViewController, sender: self)
     }
     
     //MARK: - Update Cell

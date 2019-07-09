@@ -8,26 +8,29 @@
 
 import UIKit
 
-class TabBarVC: UIViewController {
+class TabBarVC: UIViewController, UITabBarControllerDelegate{
 
     var tabBarCtlr : UITabBarController?
+//    var tabBar: UITabBar?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            displayTabViewControllers()
+        
+        tabBarCtlr = UITabBarController()
+        
+        tabBarCtlr!.delegate = self
+        displayTabViewControllers()
         
     }
     
     func displayTabViewControllers() {
-        tabBarCtlr = UITabBarController()
-        
-        //tabBarCtlr?.tabBar.barStyle = .black
-        
+    //set up tab bar
+
         let contactsVC = ContactsViewController()
+        contactsVC.title = "Contacts"
         
         let usersVC = UsersViewController()
-        
-        //self.navigationController?.navigationBar.topItem?.title = "Users"
+        usersVC.title = "Users"
         
         contactsVC.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 0)
         
@@ -36,20 +39,24 @@ class TabBarVC: UIViewController {
         let controllers = [contactsVC, usersVC]
         
         if let tabBar = tabBarCtlr {
-            //tabBar.viewControllers = controllers
+           tabBar.viewControllers = controllers
             
             tabBar.viewControllers = controllers.map{ UINavigationController(rootViewController: $0)}
             
             self.view.addSubview(tabBar.view)
         }
-        self.navigationController?.isNavigationBarHidden = true
+        //setup navigation bar
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.title = "Contacts"
         
     }
-
-    func dismissVCs(){
-        navigationController?.isNavigationBarHidden = false
-        navigationController?.popViewController(animated: true)
+    
+    func tabBarController(_ tabBarController: UITabBarController,
+                          didSelect viewController: UIViewController){
+        //modify navigation title on tab bar selection
+        navigationItem.title = tabBarController.selectedViewController?.title
     }
+
 }
 
 

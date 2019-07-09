@@ -143,9 +143,6 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         setupGoogleButton()
     
     }
-    override func viewWillAppear(_ animated: Bool) {
-       // navigationController?.navigationBar.prefersLargeTitles = false
-    }
     
     //MARK: - Handler methods
     
@@ -241,7 +238,6 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         
         if let accessToken = AccessToken.current {
             print("User already logged in with Facebook token")
-            print(accessToken)
              // Send to other VC
             showViewController()
        } // else {
@@ -268,14 +264,6 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         }
         print("user facebook logged in")
         
-//        GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email"]).start { (connection , result, err) in
-//            if err != nil {
-//                print("Failed to start graph request", err)
-//                return
-//            }
-//            //prints email, name and Id
-//            print(result!)
-    //}
         firebaseLoginwithFacebook()
         
         checkForFaceBookLoginStatus()
@@ -298,14 +286,25 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
             print("Firebase Authenticated using Facebook Credentials: ", user ?? "")
         }
         
-        GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email"]).start { (connection , result, err) in
-            if err != nil {
-                print("Failed to start graph request", err ?? "")
-                return
+        let graphRequestConnection = GraphRequestConnection()
+        
+        
+        let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields": "id, name, email, picture.type(large)"], tokenString: AccessToken.current?.tokenString, version: Settings.defaultGraphAPIVersion, httpMethod: .get)
+        graphRequestConnection.add(graphRequest) { (httpResponse, values, err) in
+            if let values = values as? [String:Any]{
+                
             }
-            //prints email, name and Id
-            print(result!)
         }
+            
+//            GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email, picture.type(large)"]).start { (connection , result, err) in
+//            if err != nil {
+//                print("Failed to start graph request", err ?? "")
+//                return
+//            }
+//            //prints email, name and Id
+//            print("This: ")
+//            print(result!)
+//        }
     }
 
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
