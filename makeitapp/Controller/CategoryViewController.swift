@@ -33,7 +33,9 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         
         //user not logged in
         if Auth.auth().currentUser?.uid == nil {
-          handleLogout()
+            DispatchQueue.main.async {
+                self.handleLogout()
+            }
         }
         
         loadCategories()

@@ -13,11 +13,22 @@ import FBSDKLoginKit
 import FacebookLogin
 import FacebookCore
 import GoogleSignIn
+import SwiftyJSON
+import FirebaseDatabase
+import FirebaseStorage
+import JGProgressHUD
+
 
 
 class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate, GIDSignInUIDelegate{
     
 
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .light)
+        hud.interactionType = .blockAllTouches
+        return hud
+    }()
+    
     private let appTitle: UILabel = {
         let label = UILabel(frame: CGRect.zero)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -117,6 +128,11 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         return segmentControl
     }()
     
+    var name: String?
+    var email: String?
+    var profilePicture: UIImage?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -208,10 +224,8 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     // Google Login Methods
     
     @objc func signIn(){
-       
         //GIDSignIn.sharedInstance()?.signIn()
         //543073452190-gr1ekolcfqnb3g9ar65c4oo97lf709oo.apps.googleusercontent.com
-
     }
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
@@ -226,10 +240,10 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
             if error != nil {
                 print("Error Authenticating credentials ",error ?? "")
                 return
+            } else if let user = Auth.auth().currentUser {
+                print("user signed in, authenticated using firebase: ",user)
+                self.showViewController()
             }
-            
-            print("user signed in, authenticated using firebase: ",user ?? "USER")
-            self.showViewController()
         }
     }
     
@@ -288,23 +302,77 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         
         let graphRequestConnection = GraphRequestConnection()
         
-        
         let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields": "id, name, email, picture.type(large)"], tokenString: AccessToken.current?.tokenString, version: Settings.defaultGraphAPIVersion, httpMethod: .get)
         graphRequestConnection.add(graphRequest) { (httpResponse, values, err) in
+            if err != nil {
+                print("Error: ",err ?? "Errores")
+                return
+            }
+            
             if let values = values as? [String:Any]{
+            let json = JSON(values)
                 
+            self.name = json["name"].string
+            self.email = json["email"].string
+                
+            guard let profilePictureURL = json["profile"]["data"]["url"].string, let url = URL(string: profilePictureURL) else {return}
+                
+                URLSession.shared.dataTask(with: url, completionHandler: { (data, response, err) in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    
+                    guard let data = data else {return}
+                    self.profilePicture = UIImage(data: data)
+                    
+                    self.saveUserIntoFirebase()
+                }).resume()
             }
         }
+        graphRequestConnection.start()
+        
+    }
+    
+    fileprivate func saveUserIntoFirebase(){
+       
+        let fileName = UUID().uuidString
+        guard let profilePicture = self.profilePicture else {return}
+        guard let uploadData = profilePicture.jpegData(compressionQuality: 0.3) else {return}
+        
+        let storageRef = Storage.storage().reference().child("profileImages").child(fileName)
+        
+        storageRef.putData(uploadData, metadata: nil) { (metadata, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            print("Successfully saved profile image into FireBase Storage")
             
-//            GraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email, picture.type(large)"]).start { (connection , result, err) in
-//            if err != nil {
-//                print("Failed to start graph request", err ?? "")
-//                return
-//            }
-//            //prints email, name and Id
-//            print("This: ")
-//            print(result!)
-//        }
+            storageRef.downloadURL(completion: { (url, error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                    return
+                }
+                guard let profilePictureUrl = url?.absoluteString else {return}
+                guard let uid = Auth.auth().currentUser?.uid else {return}
+                
+                let dictionaryValues = ["name": self.name,
+                                        "email": self.email,
+                                        "profilePictureUrl": profilePictureUrl]
+                let values = [uid: dictionaryValues]
+                
+                Database.database().reference().child("users").updateChildValues(values , withCompletionBlock: { (err, reference) in
+                    if let err = err {
+                        print(err.localizedDescription)
+                        return
+                    }
+                    print("Successfully saved user into Firebase Database")
+                    
+                })
+            })
+            
+        }
     }
 
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
