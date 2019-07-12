@@ -176,6 +176,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if error != nil {
                 print(error as Any)
+                Service.showAlert(on: self, style: .alert, title: "Login Error", message: error?.localizedDescription)
                 return
             }
             self.dismiss(animated: true, completion: nil)
@@ -192,6 +193,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         Auth.auth().createUser(withEmail: email, password: password) {  [weak self] user, error in
             if error != nil {
                 print(error!)
+                Service.showAlert(on: self!, style: .alert, title: "Register Error", message: error?.localizedDescription)
                 return
             }
             guard let strongSelf = self else { return }
