@@ -39,7 +39,7 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.googleLogOut()
                     try Auth.auth().signOut()
                     let loginVC = LogInViewController()
-                    self.present(loginVC, animated: true, completion: nil)
+                    self.present(loginVC, animated: false, completion: nil)
                 } catch let error {
                     print("Error while signing out", error)
                 }

@@ -115,7 +115,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     let googleSignInButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(signIn), for: .touchUpInside)
+        //button.addTarget(self, action: #selector(signIn), for: .touchUpInside)
         return button
     }()
     
@@ -173,17 +173,25 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     private func login(){
         guard let email = emailTextField.text, let password = passWordTextField.text else { return }
         
+        hud.textLabel.text = "Logging in..."
+        hud.show(in: view, animated: true)
+        
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if error != nil {
                 print(error as Any)
+                self.hud.dismiss(animated: true)
                 Service.showAlert(on: self, style: .alert, title: "Login Error", message: error?.localizedDescription)
                 return
             }
+            self.hud.dismiss(animated: true)
             self.dismiss(animated: true, completion: nil)
         }
     }
     
     private func register(){
+        
+        hud.textLabel.text = "Registering..."
+        hud.show(in: view, animated: true)
         
         guard let email = emailTextField.text, let password = passWordTextField.text, let name = nameTextField.text  else {
             print("Not a valid email or password")
@@ -193,6 +201,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         Auth.auth().createUser(withEmail: email, password: password) {  [weak self] user, error in
             if error != nil {
                 print(error!)
+                self?.hud.dismiss(animated: true)
                 Service.showAlert(on: self!, style: .alert, title: "Register Error", message: error?.localizedDescription)
                 return
             }
@@ -211,6 +220,8 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                 
                 if error != nil{
                     print(error as Any)
+                    self?.hud.dismiss(animated: true)
+                    Service.showAlert(on: self!, style: .alert, title: "Register Error", message: error?.localizedDescription)
                     return
                 }
                 print("Saved user into Firebase database")
@@ -225,14 +236,20 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     }
     // Google Login Methods
     
-    @objc func signIn(){
+   // @objc func signIn(){
         //GIDSignIn.sharedInstance()?.signIn()
         //543073452190-gr1ekolcfqnb3g9ar65c4oo97lf709oo.apps.googleusercontent.com
-    }
+    //}
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        
+        hud.textLabel.text = "Logging in with Google..."
+        hud.show(in: view, animated: true)
+        
         if error != nil {
             print("Error signing in ",error)
+            hud.dismiss(animated: true)
+            Service.showAlert(on: self, style: .alert, title: "Sign In Error", message: error?.localizedDescription)
             return
         }
         guard let authentication = user.authentication else {return}
@@ -241,9 +258,12 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         Auth.auth().signIn(with: credential) { (user, error) in
             if error != nil {
                 print("Error Authenticating credentials ",error ?? "")
+                self.hud.dismiss(animated: true)
+                Service.showAlert(on: self, style: .alert, title: "Sign In Error", message: error?.localizedDescription)
                 return
             } else if let user = Auth.auth().currentUser {
                 print("user signed in, authenticated using firebase: ",user)
+                self.hud.dismiss(animated: true)
                 self.showViewController()
             }
         }
@@ -280,14 +300,22 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         }
         print("user facebook logged in")
         
-        firebaseLoginwithFacebook()
+       // firebaseLoginwithFacebook()
         
-        checkForFaceBookLoginStatus()
+        //checkForFaceBookLoginStatus()
 
     }
     
     private func firebaseLoginwithFacebook(){
         
+        hud.textLabel.text = "Logging in with Facebook..."
+        hud.show(in: view, animated: true)
+        
+//        if AccessToken.current != nil {
+//            print("User already logged in with Facebook token")
+//            // Send to other VC
+//            showViewController()
+//        } else {
         let accessToken = AccessToken.current
         guard let accessTokenString = accessToken?.tokenString else {return}
         
@@ -296,6 +324,8 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         Auth.auth().signIn(with: credentials) { user, error in
             if error != nil{
                 print("Error with Firebase authentication using Facebook credentials", error ?? "")
+                self.hud.dismiss(animated: true)
+                Service.showAlert(on: self, style: .alert, title: "Sign In Error", message: error?.localizedDescription)
                 return
             }
             
@@ -331,9 +361,12 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
                     self.saveUserIntoFirebase()
                 }).resume()
             }
+            self.showViewController()
         }
         graphRequestConnection.start()
         
+//        }
+    
     }
     
     fileprivate func saveUserIntoFirebase(){
