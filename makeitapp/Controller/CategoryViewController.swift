@@ -34,7 +34,15 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
         //user not logged in
         if Auth.auth().currentUser?.uid == nil {
             DispatchQueue.main.async {
-                self.handleLogout()
+                do {
+                    self.facebookLogOut()
+                    self.googleLogOut()
+                    try Auth.auth().signOut()
+                    let loginVC = LogInViewController()
+                    self.present(loginVC, animated: true, completion: nil)
+                } catch let error {
+                    print("Error while signing out", error)
+                }
             }
         }
         
@@ -79,16 +87,20 @@ class CategoryViewController: UIViewController, UITableViewDataSource, UITableVi
     
     @objc private func handleLogout(){
         
-        facebookLogOut()
-        googleLogOut()
-        do {
-            try Auth.auth().signOut()
-        } catch let error {
-            print("Error while signing out", error)
+        let signOutAction = UIAlertAction(title: "Log Out", style: .destructive) { (action) in
+            do {
+                self.facebookLogOut()
+                self.googleLogOut()
+                try Auth.auth().signOut()
+                let loginVC = LogInViewController()
+                self.present(loginVC, animated: true, completion: nil)
+            } catch let error {
+                print("Error while signing out", error)
+                Service.showAlert(on: self, style: .alert, title: "Sign Out Error", message: error.localizedDescription)
+            }
         }
-        
-        let loginVC = LogInViewController()
-        present(loginVC, animated: true, completion: nil)
+        let cancelSignOutAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        Service.showAlert(on: self, style: .actionSheet, title: nil, message: nil, actions: [signOutAction, cancelSignOutAction], completion: nil)
     }
     
     private func facebookLogOut() {
