@@ -20,7 +20,7 @@ import JGProgressHUD
 
 
 
-class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDelegate, GIDSignInUIDelegate{
+class LogInViewController: UIViewController, GIDSignInDelegate, GIDSignInUIDelegate, LoginButtonDelegate{
     
 
     let hud: JGProgressHUD = {
@@ -106,9 +106,23 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         return imageView
     }()
     
-    let facebookLoginButton: FBLoginButton = {
-        let button = FBLoginButton()
+//    let facebookLoginButton: FBLoginButton = {
+//        let button = FBLoginButton()
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        button.addTarget(self, action: #selector(firebaseLoginwithFacebook), for: .touchUpInside)
+//        return button
+//    }()
+    
+    lazy var facebookLoginButton: UIButton = {
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Login with Facebook", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
+        button.setTitleColor(Service.buttonTitleColor, for: .normal)
+        button.backgroundColor = Service.buttonBackgroundColorSignInWithFacebook
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = Service.buttonCornerRadius
+        button.addTarget(self, action: #selector(firebaseLoginwithFacebook), for: .touchUpInside)
         return button
     }()
     
@@ -144,8 +158,8 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         view.addSubview(logingRegisterSegmentedControl)
         view.addSubview(facebookLoginButton)
         view.addSubview(googleSignInButton)
-        facebookLoginButton.delegate = self
-        facebookLoginButton.permissions = ["email", "public_profile"]
+        //facebookLoginButton.delegate = self
+       // facebookLoginButton.permissions = ["email", "public_profile"]
         GIDSignIn.sharedInstance()?.uiDelegate = self
         GIDSignIn.sharedInstance()?.delegate = self
         //GIDSignIn.sharedInstance()?.signIn()
@@ -272,25 +286,22 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     //Facebook login methods
     
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
-    
         if error != nil {
             print(error as Any)
             return
         }
         print("user facebook logged in")
-        
         firebaseLoginwithFacebook()
-
     }
     
-    private func firebaseLoginwithFacebook(){
+    @objc private func firebaseLoginwithFacebook(){
         
         hud.textLabel.text = "Logging in with Facebook..."
         hud.show(in: view, animated: true)
         
         let loginManager = LoginManager()
-        loginManager.logIn(permissions: [.publicProfile, .email], viewController: self) { loginResults in
-            switch loginResults {
+        loginManager.logIn(permissions: [.publicProfile, .email], viewController: self) { (results) in
+            switch results {
             case .success(granted: _, declined: _, token: _):
                 print("Successful log into facebook")
                 self.sigInToFirebase()
@@ -300,11 +311,10 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
             case .failed(let err):
                 print("humm... Failed ",err)
                Service.dismissHud(self.hud, text: "Error", detailText: "Failed to get user, \(err)", delay: 3)
-                return
+                
             case .cancelled:
                 print("cancelledddddddddd")
                 Service.dismissHud(self.hud, text: "Error", detailText: "Canceling from login", delay: 3)
-                return
             }
         }
         
@@ -436,12 +446,12 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
     
     private func setupFacebookButton(){
         //disabled the set constraint by the Facebook SDK.
-        for constraint in facebookLoginButton.constraints{
-            if constraint.firstAttribute == .height {
-                constraint.isActive = false
-            }
-        }
-        //Set custom constraints 
+//        for constraint in facebookLoginButton.constraints{
+//            if constraint.firstAttribute == .height {
+//                constraint.isActive = false
+//            }
+//        }
+        //Set custom constraints
         facebookLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         facebookLoginButton.topAnchor.constraint(equalTo: loginRegisterButton.bottomAnchor, constant: 50).isActive = true
         facebookLoginButton.widthAnchor.constraint(equalTo: loginRegisterButton.widthAnchor).isActive = true
