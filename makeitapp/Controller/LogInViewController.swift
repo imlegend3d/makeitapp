@@ -269,28 +269,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         }
     }
     
-    //Facebook Login methods
-    private func checkForFaceBookLoginStatus() {
-        
-        if let accessToken = AccessToken.current {
-            print("User already logged in with Facebook token")
-             // Send to other VC
-            showViewController()
-       } // else {
-//            let FBManager = LoginManager()
-//            FBManager.logIn(permissions: [Permission.publicProfile, Permission.userPhotos, .email], viewController: self) { (loginResults) in
-//                switch loginResults {
-//                case .failed(let err):
-//                    print(err)
-//                case .cancelled:
-//                    print("Cancelled login")
-//                case.success(granted: _, declined: _, token: _):
-//                    print("Logged in")
-//                }
-//            }
-//            showViewController()
-//        }
-    }
+    //Facebook login methods
     
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
     
@@ -300,9 +279,7 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         }
         print("user facebook logged in")
         
-       // firebaseLoginwithFacebook()
-        
-        //checkForFaceBookLoginStatus()
+        firebaseLoginwithFacebook()
 
     }
     
@@ -311,62 +288,69 @@ class LogInViewController: UIViewController, LoginButtonDelegate, GIDSignInDeleg
         hud.textLabel.text = "Logging in with Facebook..."
         hud.show(in: view, animated: true)
         
-//        if AccessToken.current != nil {
-//            print("User already logged in with Facebook token")
-//            // Send to other VC
-//            showViewController()
-//        } else {
-        let accessToken = AccessToken.current
-        guard let accessTokenString = accessToken?.tokenString else {return}
-        
-        let credentials = FacebookAuthProvider.credential(withAccessToken: accessTokenString)
-        
-        Auth.auth().signIn(with: credentials) { user, error in
-            if error != nil{
-                print("Error with Firebase authentication using Facebook credentials", error ?? "")
+        let loginManager = LoginManager()
+        loginManager.logIn(permissions: [.publicProfile, .email], viewController: self) { loginResults in
+            switch loginResults {
+            case .success(granted: _, declined: _, token: _):
+                print("Successful log into facebook")
+                self.sigInToFirebase()
                 self.hud.dismiss(animated: true)
-                Service.showAlert(on: self, style: .alert, title: "Sign In Error", message: error?.localizedDescription)
+                self.showViewController()
+                
+            case .failed(let err):
+                print("humm... Failed ",err)
+               Service.dismissHud(self.hud, text: "Error", detailText: "Failed to get user, \(err)", delay: 3)
+                return
+            case .cancelled:
+                print("cancelledddddddddd")
+                Service.dismissHud(self.hud, text: "Error", detailText: "Canceling from login", delay: 3)
                 return
             }
-            
-            print("Firebase Authenticated using Facebook Credentials: ", user ?? "")
         }
         
-        let graphRequestConnection = GraphRequestConnection()
+//        let graphRequestConnection = GraphRequestConnection()
+//
+//        let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields": "id, name, email, picture.type(large)"], tokenString: AccessToken.current?.tokenString, version: Settings.defaultGraphAPIVersion, httpMethod: .get)
+//        graphRequestConnection.add(graphRequest) { (httpResponse, values, err) in
+//            if err != nil {
+//                print("Error: ",err ?? "Errores")
+//                return
+//            }
+//
+//            if let values = values as? [String:Any]{
+//            let json = JSON(values)
+//            self.name = json["name"].string
+//            self.email = json["email"].string
+//            guard let profilePictureURL = json["profile"]["data"]["url"].string, let url = URL(string: profilePictureURL) else {return}
+//                URLSession.shared.dataTask(with: url, completionHandler: { (data, response, err) in
+//                    if let err = err {
+//                        print(err)
+//                        return
+//                    }
+//                    guard let data = data else {return}
+//                    self.profilePicture = UIImage(data: data)
+//                    self.saveUserIntoFirebase()
+//                }).resume()
+//            }
+//        }
+//        graphRequestConnection.start()
         
-        let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields": "id, name, email, picture.type(large)"], tokenString: AccessToken.current?.tokenString, version: Settings.defaultGraphAPIVersion, httpMethod: .get)
-        graphRequestConnection.add(graphRequest) { (httpResponse, values, err) in
-            if err != nil {
-                print("Error: ",err ?? "Errores")
+    }
+    
+    func sigInToFirebase(){
+        
+        guard let authentificationToken = AccessToken.current?.tokenString else {return}
+        let credential = FacebookAuthProvider.credential(withAccessToken: authentificationToken)
+        Auth.auth().signIn(with: credential) { (user, err) in
+            if let err = err {
+                print(err)
+                Service.dismissHud(self.hud, text: "Sign In Error", detailText: err.localizedDescription, delay: 3)
                 return
             }
-            
-            if let values = values as? [String:Any]{
-            let json = JSON(values)
-                
-            self.name = json["name"].string
-            self.email = json["email"].string
-                
-            guard let profilePictureURL = json["profile"]["data"]["url"].string, let url = URL(string: profilePictureURL) else {return}
-                
-                URLSession.shared.dataTask(with: url, completionHandler: { (data, response, err) in
-                    if let err = err {
-                        print(err)
-                        return
-                    }
-                    
-                    guard let data = data else {return}
-                    self.profilePicture = UIImage(data: data)
-                    
-                    self.saveUserIntoFirebase()
-                }).resume()
-            }
+            print("Successful authenitcated with Firebase")
+            self.hud.dismiss(animated: true)
             self.showViewController()
         }
-        graphRequestConnection.start()
-        
-//        }
-    
     }
     
     fileprivate func saveUserIntoFirebase(){

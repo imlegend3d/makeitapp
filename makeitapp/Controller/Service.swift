@@ -8,6 +8,7 @@
 
 import UIKit
 import LBTAComponents
+import JGProgressHUD
 
 class Service {
     static let baseColor = UIColor(r: 254, g: 202, b: 64)
@@ -26,5 +27,11 @@ class Service {
             alert.addAction(action)
         }
         on.present(alert,animated: true, completion: nil)
+    }
+    
+    static func dismissHud(_ hud: JGProgressHUD, text: String, detailText: String, delay: TimeInterval){
+        hud.textLabel.text = text
+        hud.detailTextLabel.text = detailText
+        hud.dismiss(afterDelay: delay, animated: true)
     }
 }
